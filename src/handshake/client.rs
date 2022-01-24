@@ -110,38 +110,38 @@ fn generate_request(request: Request, key: &str) -> Result<Vec<u8>> {
 
     writeln!(req, "\
          GET {} {:?}\r\n\
-         Connection: Upgrade\r\n"
-        uri.path_and_query().ok_or(Error::Url(UrlError::NoPathOrQuery))?.as_str()
+         Connection: Upgrade\r",
+        uri.path_and_query().ok_or(Error::Url(UrlError::NoPathOrQuery))?.as_str(),
         request.version()
     ).unwrap();
 
-    let host_o = request.headers().iter().find(|(k, v)| k.as_str().eq(header::HOST.as_str()));
+    let host_o = request.headers().iter().find(|(k, _)| k.as_str().eq(header::HOST.as_str()));
     if host_o.is_none() {
-        writeln!("Host: {}\r\n", host).unwrap();
+        writeln!(req, "Host: {}\r", host).unwrap();
     } else {
-        writeln!("Host: {}\r\n", host_o.unwrap().1.to_str().unwrap()).unwrap();
+        writeln!(req, "Host: {}\r", host_o.unwrap().1.to_str().unwrap()).unwrap();
     }
 
-    let origin_o = request.headers().iter().find(|(k, v)| k.as_str().eq(header::ORIGIN.as_str()));
+    let origin_o = request.headers().iter().find(|(k, _)| k.as_str().eq(header::ORIGIN.as_str()));
     if origin_o.is_some() {
-        writeln!("Origin: {}\r\n", origin_o.unwrap().1.to_str().unwrap()).unwrap();
+        writeln!(req, "Origin: {}\r", origin_o.unwrap().1.to_str().unwrap()).unwrap();
     }
 
-    let key_o = request.headers().iter().find(|(k, v)| k.as_str().eq(header::SEC_WEBSOCKET_KEY.as_str()));
+    let key_o = request.headers().iter().find(|(k, _)| k.as_str().eq(header::SEC_WEBSOCKET_KEY.as_str()));
     if key_o.is_none() {
-        writeln!(req, "Sec-WebSocket-Key: {}\r\n", key).unwrap();
+        writeln!(req, "Sec-WebSocket-Key: {}\r", key).unwrap();
     } else {
-        writeln!(req, "Sec-WebSocket-Key: {}\r\n", key_o.unwrap().1.to_str().unwrap()).unwrap();
+        writeln!(req, "Sec-WebSocket-Key: {}\r", key_o.unwrap().1.to_str().unwrap()).unwrap();
     }
 
-    let version_o = request.headers().iter().find(|(k, v)| k.as_str().eq(header::SEC_WEBSOCKET_VERSION.as_str()));
+    let version_o = request.headers().iter().find(|(k, _)| k.as_str().eq(header::SEC_WEBSOCKET_VERSION.as_str()));
     if version_o.is_none() {
-        writeln!(req, "Sec-WebSocket-Version: 13\r\n").unwrap();
+        writeln!(req, "Sec-WebSocket-Version: 13\r").unwrap();
     } else {
-        writeln!(req, "Sec-WebSocket-Version: {}\r\n", version_o.unwrap().1.to_str().unwrap()).unwrap();
+        writeln!(req, "Sec-WebSocket-Version: {}\r", version_o.unwrap().1.to_str().unwrap()).unwrap();
     }
 
-    writeln!(req, "Upgrade: websocket\r\n").unwrap();
+    writeln!(req, "Upgrade: websocket\r").unwrap();
 
     for (k, v) in request.headers() {
         let mut k = k.as_str();
