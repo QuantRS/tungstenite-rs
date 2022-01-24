@@ -124,6 +124,7 @@ fn generate_request(request: Request, key: &str) -> Result<Vec<u8>> {
     )
     .unwrap();
 
+    println!("{:?}", request.headers());
     for (k, v) in request.headers() {
         if k == header::CONNECTION
             || k == header::UPGRADE
